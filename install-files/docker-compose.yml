@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+
+  mysql56:
+    image: mysql:5.6
+    container_name: "mysql56"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    command: --init-file /data/application/init.sql
+    volumes:
+      - ../mysql:/var/lib/mysql
+      - ./files/init.sql:/data/application/init.sql
+    ports:
+      - 3306:3306
+
+  php:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - ../sistems:/var/www
+      - ./files/php72.ini:/etc/php/7.2/apache2/php.ini
+      - ./files/apache2.conf:/etc/apache2/apache2.conf
+    ports:
+      - 80:80
+      - 8000:8000
+
+  phpmyadmin:
+    image: phpmyadmin:5.1.0-apache
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=mysql56

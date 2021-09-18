@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Encurtador de Links</title>
+    <style type="text/css">
+        body {
+            background-color: #cacecd;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <br />
+    <div class="card" style="width: 90%;" v-if="processando">
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col" align="center">
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                    </th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div class="card" style="width: 90%;" v-if="!processando">
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Data de Criação</th>
+                    <th scope="col">Data de Expiração</th>
+                    <th scope="col">URL Original</th>
+                    <th scope="col">URL Encurtada</th>
+                </tr>
+                </thead>
+
+                <tbody v-if="totalUrl > 0">
+                <tr v-for="nota in notas">
+                    <td scope="row">{{ nota.numero }}</td>
+                    <td>{{ nota.datahoraemissao_formatado }}</td>
+                    <td>{{ nota.tomador }}</td>
+                    <td>{{ nota.status }}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Ações
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                <button class="dropdown-item" type="button" @click="imprimirNfe(nota)">Imprimir NFE</button>
+                                <button class="dropdown-item" type="button" v-if="nota.suspenso == 'N'" @click="modalSuspender(nota,'S')">Suspender NFE</button>
+                                <button class="dropdown-item" type="button" v-if="nota.suspenso == 'S'" @click="modalSuspender(nota,'N')">Normalizar NFE</button>
+                                <button class="dropdown-item" type="button" @click="modalAlterarData(nota)">Alterar Datas</button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+
+                <tbody v-else>
+                <tr>
+                    <th colspan="5">Nenhum registro encontrado</th>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script type="text/javascript">
+    var app = new Vue({
+        el: '#app',
+        data: {
+            processando: false,
+            processandoModal: false,
+            totalUrl: 0,
+            url: [],
+            modal: {}
+        },
+        methods: {
+            pesquisaUrl() {
+                this.processando = true;
+                axios({
+                    method: 'get',
+                    url: 'http://localhost:8000/api/Url'
+                })
+                    .then((response) => {
+                        this.processando = false;
+                        this.url = response.data;
+                        this.totalUrl = this.notas.length;
+                    })
+                    .catch(function (error) {
+                        // handle error
+                        //console.log(error);
+                    })
+                    .finally(function () {
+
+                    });
+            }
+        },
+        mounted() {
+            this.pesquisaUrl()
+        }
+    })
+</script>
+</body>
+</html>
