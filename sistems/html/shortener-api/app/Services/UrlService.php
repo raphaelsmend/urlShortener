@@ -72,6 +72,6 @@ class UrlService
             return response("not found.", Response::HTTP_NOT_FOUND);
         }
 
-        return Redirect::intended($url->url_original);
+        return redirect()->away($url->url_original);
     }
 }
