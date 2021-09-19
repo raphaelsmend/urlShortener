@@ -7,7 +7,7 @@ up:
 
 .PHONY: install
 install:
-	cd install-files && docker-compose build --force-rm && docker-compose up -d && docker-compose exec php sh -c "cd /var/www/html/shortener-api && composer install" && docker-compose exec php sh -c "cp /var/www/html/shortener-api/.env.example /var/www/html/shortener-api/.env" && docker-compose exec php sh -c "cd /var/www/html/shortener-api && php artisan migrate && php artisan db:seed" && docker-compose down
+	cd install-files && docker-compose build && docker-compose up -d && docker-compose exec php sh -c "cd /var/www/html/shortener-api && composer install && cp .env.example .env && php artisan migrate && php artisan db:seed" && docker-compose down
 
 .PHONY: php
 php:

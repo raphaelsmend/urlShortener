@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Api\UrlController;
+use Api\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,5 @@ use Api\UrlController;
 */
 
 Route::resource('/Url', UrlController::class);
+
+Route::post('/login', LoginController::class);

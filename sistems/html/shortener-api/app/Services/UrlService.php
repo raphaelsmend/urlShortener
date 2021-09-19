@@ -4,17 +4,23 @@ namespace  App\Services;
 
 use App\Repositories\UrlRepository;
 use App\Traits\GeneralFuncions;
+use Illuminate\Routing\UrlGenerator;
+use Illuminate\Support\Facades\Redirect;
+use Symfony\Component\HttpFoundation\Response;
 
 class UrlService
 {
     private $repository;
+    private $urlGenerator;
 
     use GeneralFuncions;
 
     function __construct(
-        UrlRepository $repository
+        UrlRepository $repository,
+        UrlGenerator $urlGenerator
     ) {
         $this->repository = $repository;
+        $this->urlGenerator = $urlGenerator;
     }
 
     public function getAll()
@@ -51,10 +57,20 @@ class UrlService
         $validUrlShortened = false;
 
         while (! $validUrlShortened) {
-            $urlShortened = $this->generateUrlShortened();
+            $urlShortened = $this->urlGenerator->to('/')."/".$this->generateUrlShortened();
             if($this->isValidUrlShortened($urlShortened)){
                 return $urlShortened;
             }
         }
+    }
+
+    public function redirectShortenedUrl(String $urlShortened){
+        $urlComplete = $this->urlGenerator->to('/')."/".$urlShortened;
+        $url = $this->repository->getByShortened($urlComplete);
+        if(empty($url)){
+            return response("not found.", Response::HTTP_NOT_FOUND);
+        }
+
+        return Redirect::intended($url->url_original);
     }
 }

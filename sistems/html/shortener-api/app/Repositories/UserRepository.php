@@ -13,8 +13,8 @@ class UserRepository
         $this->model = $model;
     }
 
-    public function getUser(String $email, String $password)
+    public function getUserByMail(Array $fields)
     {
-        return $this->model->where("email", $email)->where("password", $password)->first();
+        return $this->model->where("email", $fields["email"])->first();
     }
 }

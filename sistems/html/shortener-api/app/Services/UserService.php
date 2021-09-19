@@ -3,6 +3,8 @@
 namespace  App\Services;
 
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserService
 {
@@ -14,8 +16,19 @@ class UserService
         $this->repository = $repository;
     }
 
-    public function getUser(String $email, String $password)
+    public function getUser(Array $fields)
     {
-        return $this->repository->getUser($email, $password);
+        $user = $this->repository->getUserByMail($fields);
+
+        if (empty($user)){
+            return response("User nor found.", Response::HTTP_UNAUTHORIZED);
+        }
+
+        if (Hash::check($fields["password"], $user->password)) {
+            return response("logged.", Response::HTTP_OK);
+        }else{
+            return response("incorrect password.", Response::HTTP_UNAUTHORIZED);
+        }
+
     }
 }

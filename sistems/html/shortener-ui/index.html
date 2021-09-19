@@ -18,6 +18,14 @@
 <body>
 <div class="container" id="app">
     <br />
+    <div class="card" style="width: 90%;">
+        <div class="card-body">
+            <button type="button" class="btn btn-primary" @click="pesquisaUrl">Atualizar</button>
+            <button type="button" class="btn btn-warning" @click="sair">Sair</button>
+        </div>
+    </div>
+
+    <br />
     <div class="card" style="width: 90%;" v-if="processando">
         <div class="card-body">
             <table class="table table-striped">
@@ -48,24 +56,11 @@
                 </thead>
 
                 <tbody v-if="totalUrl > 0">
-                <tr v-for="nota in notas">
-                    <td scope="row">{{ nota.numero }}</td>
-                    <td>{{ nota.datahoraemissao_formatado }}</td>
-                    <td>{{ nota.tomador }}</td>
-                    <td>{{ nota.status }}</td>
-                    <td>
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Ações
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                <button class="dropdown-item" type="button" @click="imprimirNfe(nota)">Imprimir NFE</button>
-                                <button class="dropdown-item" type="button" v-if="nota.suspenso == 'N'" @click="modalSuspender(nota,'S')">Suspender NFE</button>
-                                <button class="dropdown-item" type="button" v-if="nota.suspenso == 'S'" @click="modalSuspender(nota,'N')">Normalizar NFE</button>
-                                <button class="dropdown-item" type="button" @click="modalAlterarData(nota)">Alterar Datas</button>
-                            </div>
-                        </div>
-                    </td>
+                <tr v-for="url_item in url">
+                    <td scope="row">{{ dateFormatBR(url_item.created_at) }}</td>
+                    <td>{{ dateFormatBR(url_item.date_expiration) }}</td>
+                    <td>{{ url_item.url_original }}</td>
+                    <td>{{ url_item.url_shortened }}</td>
                 </tr>
                 </tbody>
 
@@ -88,6 +83,7 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script src="js/moment-with-locales.js"></script>
 <script type="text/javascript">
     var app = new Vue({
         el: '#app',
@@ -95,8 +91,7 @@
             processando: false,
             processandoModal: false,
             totalUrl: 0,
-            url: [],
-            modal: {}
+            url: []
         },
         methods: {
             pesquisaUrl() {
@@ -106,9 +101,10 @@
                     url: 'http://localhost:8000/api/Url'
                 })
                     .then((response) => {
+                        console.log(response.data);
                         this.processando = false;
                         this.url = response.data;
-                        this.totalUrl = this.notas.length;
+                        this.totalUrl = this.url.length;
                     })
                     .catch(function (error) {
                         // handle error
@@ -117,6 +113,19 @@
                     .finally(function () {
 
                     });
+            },
+            sair() {
+                localStorage.setItem('userShortener',null);
+                window.location.href = "login.html";
+            },
+            dateFormatBR(date){
+                return moment(date).format('DD/MM/YYYY');;
+            }
+        },
+        beforeCreate() {
+            var userLogged = localStorage.getItem('userShortener');
+            if(userLogged == null) {
+                window.location.href = "login.html";
             }
         },
         mounted() {
