@@ -29,6 +29,6 @@ restart:
 database:
 	cd install-files && docker-compose exec php sh -c "cd /var/www/html/shortener-api && php artisan migrate && php artisan db:seed"
 
-.PHONY: test
-test:
-	cd install-files && docker-compose exec php sh -c "cd /var/www/html/shortener-api/vendor/bin/phpunit -d memory_limit=-1 --testdox"
+.PHONY: tests
+tests:
+	cd install-files && docker-compose exec php sh -c "cd /var/www/html/shortener-api && vendor/bin/phpunit -d memory_limit=-1 --testdox"

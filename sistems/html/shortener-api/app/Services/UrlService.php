@@ -7,6 +7,7 @@ use App\Traits\GeneralFuncions;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Redirect;
 use Symfony\Component\HttpFoundation\Response;
+use App\Transformers\UrlTransformer;
 
 class UrlService
 {
@@ -49,7 +50,7 @@ class UrlService
             $fields["date_expiration"] = $this->generateDateExpiration();
         }
 
-        return $this->repository->create($fields);
+        return UrlTransformer::transform($this->repository->create($fields));
     }
 
     private function generateValidUrlShortened()

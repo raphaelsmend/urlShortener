@@ -2,17 +2,15 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
-class ExampleTest extends TestCase
+class UserTest extends TestCase
 {
     /**
      * @test
      */
-    public function testBasicTest()
+    public function userBasicTest()
     {
         $response = $this->get('/');
 
@@ -22,19 +20,30 @@ class ExampleTest extends TestCase
     /**
      * @test
      */
-    public function createUserTest()
+    public function validLoginTest()
     {
-        //$response = $this->post('/login');
-
-        $this->json(
-            'POST',
-            '/login',
+        $response = $this->post('/api/login',
             [
                 'email'     => 'admin@admin',
                 'password'    => 'admin'
             ]
-        )->assertStatus(
-            Response::HTTP_OK
         );
+
+        $response->assertStatus(Response::HTTP_OK);
+    }
+
+    /**
+     * @test
+     */
+    public function invalidLoginTest()
+    {
+        $response = $this->post('/api/login',
+            [
+                'email'     => 'admin@admin',
+                'password'    => '111'
+            ]
+        );
+
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 }
