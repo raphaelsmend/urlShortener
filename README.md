@@ -74,4 +74,7 @@ FIELDS:
 FrontEnd for LIST URL
 ```bash
 http://localhost
+
+USER: admin@admin
+PASSWORD: admin
 ```
